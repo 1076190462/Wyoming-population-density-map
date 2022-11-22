@@ -91,15 +91,6 @@ d3.json("wy-topo.json", function(error, topology) {
         }
 });
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
 function update1(){
         if(color_flag==true){
         color_flag = false;
