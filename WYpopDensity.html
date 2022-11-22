@@ -1,10 +1,21 @@
 <!DOCTYPE html>
+<div id="option">
+    <input name="updateButton" 
+           type="button" 
+           value="change color" 
+           onclick="update1()" />
+    <input name="updateButton" 
+           type="button" 
+           value="toggle" 
+           onclick="update2()" />
+</div>
 <svg width="960" height="1100"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/topojson.v2.min.js"></script>
 <script>
 
+    
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
@@ -15,6 +26,7 @@ var color = d3.scaleThreshold()
     .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
     .range(d3.schemeOrRd[9]);
 
+    
 var x = d3.scaleSqrt()
     .domain([0, 4500])
     .rangeRound([440, 950]);
@@ -50,9 +62,13 @@ g.call(d3.axisBottom(x)
     .tickValues(color.domain()))
   .select(".domain")
     .remove();
-
+   
+toggle_flag = true;    
+color_flag = true;
+    
 d3.json("wy-topo.json", function(error, topology) {
   if (error) throw error;
+
 
   svg.append("g")
     .selectAll("path")
@@ -61,13 +77,84 @@ d3.json("wy-topo.json", function(error, topology) {
       .attr("fill", function(d) { return color(d.properties.density); })
       .attr("d", path);
 
-  svg.append("path")
+   if(toggle_flag==true){
+            svg.append("path")
       .datum(topojson.feature(topology, topology.objects.counties))
       .attr("fill", "none")
       .attr("stroke", "#000")
       .attr("stroke-opacity", 0.3)
       .attr("d", path);
+        }
 });
+    
+function update1(){
+    svg.selectAll("path").remove();
+    if(color_flag==true){
+            var color = d3.scaleThreshold()
+    .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+    .range(d3.schemeBuPu[9]);
+        }else{
+            var color = d3.scaleThreshold()
+    .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+    .range(d3.schemeOrRd[9]);
+        }
+    
+    d3.json("wy-topo.json", function(error, topology) {
+      if (error) throw error;
+        
+        svg.append("g")
+        .selectAll("path")
+        .data(topojson.feature(topology, topology.objects.tracts).features)
+        .enter().append("path")
+          .attr("fill", function(d) { return color(d.properties.density); })
+          .attr("d", path);
+        
+        if(toggle_flag==true){
+            svg.append("path")
+      .datum(topojson.feature(topology, topology.objects.counties))
+      .attr("fill", "none")
+      .attr("stroke", "#000")
+      .attr("stroke-opacity", 0.3)
+      .attr("d", path);
+        }
+        
+    });
+    if(color_flag==true){
+        color_flag = false;
+    }else if(color_flag==false){
+        color_flag = true;
+    }
+}  
+
+function update2(){
+
+  svg.selectAll("path").remove();
+    d3.json("wy-topo.json", function(error, topology) {
+      if (error) throw error;
+
+        svg.append("g")
+        .selectAll("path")
+        .data(topojson.feature(topology, topology.objects.tracts).features)
+        .enter().append("path")
+          .attr("fill", function(d) { return color(d.properties.density); })
+          .attr("d", path);
+        
+        if(toggle_flag==true){
+            svg.append("path")
+      .datum(topojson.feature(topology, topology.objects.counties))
+      .attr("fill", "none")
+      .attr("stroke", "#000")
+      .attr("stroke-opacity", 0.3)
+      .attr("d", path);
+        }
+        
+    });
+    if(toggle_flag==true){
+        toggle_flag = false;
+    }else if(toggle_flag==false){
+        toggle_flag = true;
+    }
+}   
+
 
 </script>
-
